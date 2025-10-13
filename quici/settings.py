@@ -140,9 +140,10 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://quici-backend-01yl.onrender.com",
-    "http://quici-backend-01yl.onrender.com",
+    "https://quici-backend-1.onrender.com", 
+    "http://quici-backend-1.onrender.com"
 ]
+
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

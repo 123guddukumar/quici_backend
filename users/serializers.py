@@ -42,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.profile_picture.url)
-            return f"{self.context.get('base_url', 'http://localhost:8000')}{obj.profile_picture.url}"
+            return f"{self.context.get('base_url', 'https://quici-backend-01yl.onrender.com')}{obj.profile_picture.url}"
         return None
 
 class UserLoginSerializer(serializers.Serializer):
