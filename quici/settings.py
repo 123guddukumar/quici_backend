@@ -132,16 +132,20 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 # APPEND_SLASH = True
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:5173',
     'https://quici-restaurant.netlify.app',
-    'https://quici-restaurant.page.dev'
+    'https://quici-restaurant.pages.dev'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://quici-backend-1.onrender.com", 
-    "http://quici-backend-1.onrender.com"
+    "http://quici-backend-1.onrender.com",
+    "https://quici-restaurant.pages.dev"
 ]
 
 
