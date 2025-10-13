@@ -83,23 +83,23 @@ CHANNEL_LAYERS = {
     },
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'quici_db',
-        'USER': 'quici_db_user',
-        'PASSWORD': 'JSKhQgPBROBSiWu329fM0GtnbGtpIJKH',
-        'HOST': 'dpg-d3mki73uibrs738v8v9g-a.oregon-postgres.render.com',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'quici_db',
+#         'USER': 'quici_db_user',
+#         'PASSWORD': 'JSKhQgPBROBSiWu329fM0GtnbGtpIJKH',
+#         'HOST': 'dpg-d3mki73uibrs738v8v9g-a.oregon-postgres.render.com',
+#         'PORT': '5432',
+#     }
+# }
 
 
 AUTH_PASSWORD_VALIDATORS = [
