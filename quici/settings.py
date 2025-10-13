@@ -139,6 +139,12 @@ CORS_ALLOWED_ORIGINS = [
     'https://quici-restaurant.page.dev'
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://quici-backend-01yl.onrender.com",
+    "http://quici-backend-01yl.onrender.com",
+]
+
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
