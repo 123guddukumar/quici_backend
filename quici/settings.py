@@ -30,8 +30,7 @@ INSTALLED_APPS = [
     'notifications',
     'reports',
     'wishlist',
-    'channels',
-    'webpush',
+    'channels'
 ]
 
 MIDDLEWARE = [

@@ -14,6 +14,5 @@ urlpatterns = [
     path('api/cart/', include('cart.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/reports/', include('reports.urls')),
-    path('api/wishlist/', include('wishlist.urls')),
-    path('webpush/', include('webpush.urls'))
+    path('api/wishlist/', include('wishlist.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
