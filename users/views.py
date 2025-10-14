@@ -175,3 +175,35 @@ class AddressViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         logger.info(f"Deleting address {instance.id} for user {self.request.user.username}")
         instance.delete()
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def contact_form_view(request):
+    """
+    Handle contact form submission and send email to admin via SMTP
+    """
+    data = request.data
+    first_name = data.get('firstName')
+    last_name = data.get('lastName')
+    email = data.get('email')
+    phone = data.get('phone', 'N/A')
+    subject = data.get('subject', 'General Inquiry')
+    message = data.get('message')
+
+    if not all([first_name, last_name, email, message]):
+        return Response({"detail": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Prepare email content
+    full_name = f"{first_name} {last_name}"
+    admin_subject = f"New Contact Form Submission: {subject}"
+    
+    html_message = f"""
+    <h2>New Message from Contact Form</h2>
+    <p><strong>From:</strong> {full_name} ({email})</p>
+    <p><strong>Phone:</strong> {phone}</p>
+    <p><strong>Subject:</strong> {subject}</p>
+    <hr>
+    <p><strong>Message:</strong></p>
+    <p>{message}</p>
+    <hr>
+    <small>Sent via Quicki Restaurant Contact Form</small>
