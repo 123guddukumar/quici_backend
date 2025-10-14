@@ -10,6 +10,9 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .views import *
+from rest_framework.decorators import api_view, permission_classes
+from django.core.mail import send_mail, EmailMessage
+from django.conf import settings    
 
 
 logger = logging.getLogger(__name__)
