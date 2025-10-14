@@ -176,69 +176,76 @@ class AddressViewSet(viewsets.ModelViewSet):
         logger.info(f"Deleting address {instance.id} for user {self.request.user.username}")
         instance.delete()
 
-from rest_framework import viewsets, generics, status
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import CustomUser, Restaurant, City, Address
-from .serializers import CustomUserSerializer, CustomTokenObtainPairSerializer, RestaurantSerializer, CitySerializer, UserSerializer, UserLoginSerializer, AddressSerializer
-import logging
-from django.db import IntegrityError
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
+from rest_framework import status
 from django.core.mail import send_mail
 from django.conf import settings
-from django.utils.html import strip_tags
-from rest_framework.decorators import api_view, permission_classes
+import logging
+
+logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def contact_form_view(request):
     """
-    Handle contact form submission and send email to admin via SMTP
+    Handle contact form submission and send email to admin
     """
-    data = request.data
-    first_name = data.get('firstName')
-    last_name = data.get('lastName')
-    email = data.get('email')
-    phone = data.get('phone', 'N/A')
-    subject = data.get('subject', 'General Inquiry')
-    message = data.get('message')
-
-    if not all([first_name, last_name, email, message]):
-        return Response({"detail": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Prepare email content
-    full_name = f"{first_name} {last_name}"
-    admin_subject = f"New Contact Form Submission: {subject}"
-    
-    html_message = f"""
-    <h2>New Message from Contact Form</h2>
-    <p><strong>From:</strong> {full_name} ({email})</p>
-    <p><strong>Phone:</strong> {phone}</p>
-    <p><strong>Subject:</strong> {subject}</p>
-    <hr>
-    <p><strong>Message:</strong></p>
-    <p>{message}</p>
-    <hr>
-    <small>Sent via Quicki Restaurant Contact Form</small>
-    """
-    
-    plain_message = strip_tags(html_message)
-
     try:
-        # Send email to admin
+        # Extract data
+        first_name = request.data.get('firstName', '').strip()
+        last_name = request.data.get('lastName', '').strip()
+        email = request.data.get('email', '').strip()
+        phone = request.data.get('phone', '').strip()
+        subject = request.data.get('subject', 'No Subject')
+        message = request.data.get('message', '').strip()
+
+        # Basic validation
+        if not email or not message:
+            return Response({
+                'detail': 'Email and message are required.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(message) < 10:
+            return Response({
+                'detail': 'Message must be at least 10 characters.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Format email content
+        full_name = f"{first_name} {last_name}".strip() or "Anonymous"
+        customer_subject = f"Contact Form: {subject}"
+        email_body = f"""
+        New contact form submission:
+
+        Name: {full_name}
+        Email: {email}
+        Phone: {phone or 'Not provided'}
+        Subject: {subject}
+
+        Message:
+        {message}
+
+        ---
+        This email was sent via Quicki Restaurant contact form.
+        """
+
+        # Send email
         send_mail(
-            subject=admin_subject,
-            message=plain_message,
+            subject=customer_subject,
+            message=email_body,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.DEFAULT_FROM_EMAIL],  # Send to admin email
-            html_message=html_message,
+            recipient_list=[settings.VAPID_ADMIN_EMAIL],  # Use your admin email
             fail_silently=False,
         )
-        logger.info(f"Contact form email sent successfully from {email}")
-        return Response({"detail": "Message sent successfully"}, status=status.HTTP_200_OK)
+
+        logger.info(f"Contact email sent successfully from {email}")
+        return Response({
+            'detail': 'Message sent successfully!'
+        }, status=status.HTTP_200_OK)
+
     except Exception as e:
         logger.error(f"Failed to send contact email: {str(e)}")
-        return Response({"detail": "Failed to send message"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({
+            'detail': 'Failed to send message. Please try again later.'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
