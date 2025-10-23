@@ -91,17 +91,27 @@ CHANNEL_LAYERS = {
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'quici_db',
+#         'USER': 'quici_db_user',
+#         'PASSWORD': 'JSKhQgPBROBSiWu329fM0GtnbGtpIJKH',
+#         'HOST': 'dpg-d3mki73uibrs738v8v9g-a.oregon-postgres.render.com',
+#         'PORT': '5432',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'quici_db',
-        'USER': 'quici_db_user',
-        'PASSWORD': 'JSKhQgPBROBSiWu329fM0GtnbGtpIJKH',
-        'HOST': 'dpg-d3mki73uibrs738v8v9g-a.oregon-postgres.render.com',
+        'NAME': 'quickidb',
+        'USER': 'ankit',
+        'PASSWORD': 'Ankit_Quicki',
+        'HOST': 'quicki-db.cfkoyeseecec.ap-south-1.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -177,21 +187,13 @@ VAPID_PUBLIC_KEY = 'BGInHhvVw4w2-wMWDJltZ4nGjVM4JODRLBRVK_BCIAzjMhTRhMJqAD-UJwRr
 VAPID_PRIVATE_KEY = 'GWyqKCJ08o4m2dUHghm0QbKh8yp5Rep4fxu6FZ47dgM'
 VAPID_ADMIN_EMAIL = 'fakeclub256@gmail.com'
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': BASE_DIR / 'logs' / 'django.log',
-#         },
-#     },
-#     'loggers': {
-#         '': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-# }
+
+AWS_ACCESS_KEY_ID = 'AKIAZ4SZDVVD2NGQ4OXZ'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'quicki-media'
+AWS_S3_SIGNATURE_NAME = 's3v4',
+AWS_S3_REGION_NAME = 'ap-south-1'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL =  None
+AWS_S3_VERITY = True
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
