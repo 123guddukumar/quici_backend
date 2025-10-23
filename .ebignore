@@ -1,0 +1,9 @@
+*.sqlite3
+*.pyc
+__pycache__/
+node_modules/
+.env
+.git
+.gitignore
+/static/
+media/
