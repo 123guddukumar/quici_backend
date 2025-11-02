@@ -84,7 +84,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             # "hosts": ["rediss://default:AV0vAAIncDJmZjk0Yjc0ZWI1Yzg0MWVlYjg4ODI3MjA1ZjUxZDkxNnAyMjM4NTU@warm-lacewing-23855.upstash.io:6379"],
-           "hosts":["redis://default:ASiWAAIncDJjMTk5ZDhlM2UzYjQ0Yzk4OGMyYmU2ZTQ5YTQ1NzhkMXAyMTAzOTA@honest-jackal-10390.upstash.io:6379"]
+           "hosts": ["rediss://default:ASiWAAIncDJjMTk5ZDhlM2UzYjQ0Yzk4OGMyYmU2ZTQ5YTQ1NzhkMXAyMTAzOTA@honest-jackal-10390.upstash.io:6379"]
         },
     },
 }
@@ -193,6 +193,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://quici-restaurant.pages.dev",
     'https://quicki-c6g.pages.dev',
     'https://api.quicki.net',
+    'http://api.quicki.net',
     'https://quicki.net',
     'https://www.quicki.net'
 ]
