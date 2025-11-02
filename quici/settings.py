@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-7zhugr7hk7f%#o8@wf)*yb9$i$y*1z@cw%qxy9d!)$0%qs#8ap')
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [".elasticbeanstalk.com","*",'quici-backend-1.onrender.com']
 
