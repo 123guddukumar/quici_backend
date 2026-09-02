@@ -7,9 +7,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-7zhugr7hk7f%#o8@wf)*yb9$i$y*1z@cw%qxy9d!)$0%qs#8ap')
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = [".elasticbeanstalk.com","*",'quici-backend-1.onrender.com']
+ALLOWED_HOSTS = [
+    '.elasticbeanstalk.com',
+    'quici-backend-1.onrender.com',
+    'api.quicki.net',
+    'quicki.net',
+    'www.quicki.net',
+    'localhost',
+    '127.0.0.1',
+    '*',  # Remove this in strict production
+]
 
 
 INSTALLED_APPS = [
@@ -106,20 +115,27 @@ CHANNEL_LAYERS = {
 #     }
 # }
 
-DB_HOST = os.environ.get('DB_HOST') or 'quicki-db.cfkoyeseecec.ap-south-1.rds.amazonaws.com'
-DB_NAME = os.environ.get('DB_NAME') or 'quickidb'
-DB_USER = os.environ.get('DB_USER') or 'ankit'
-DB_PASSWORD = os.environ.get('DB_PASSWORD') or 'Ankit_Quicki'
-DB_PORT = os.environ.get('DB_PORT') or '5432'
+# ── Supabase PostgreSQL via pgBouncer (Transaction Pooling) ──
+DB_HOST     = os.environ.get('DB_HOST',     'aws-0-ap-southeast-1.pooler.supabase.com')
+DB_NAME     = os.environ.get('DB_NAME',     'postgres')
+DB_USER     = os.environ.get('DB_USER',     'postgres.tffolqqyyciagmhikxjj')
+DB_PASSWORD = os.environ.get('DB_PASSWORD', 'Ankit@@2580')
+DB_PORT     = os.environ.get('DB_PORT',     '6543')  # pgBouncer port
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
+        'ENGINE':   'django.db.backends.postgresql',
+        'NAME':     DB_NAME,
+        'USER':     DB_USER,
         'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': DB_PORT,
+        'HOST':     DB_HOST,
+        'PORT':     DB_PORT,
+        # ── pgBouncer Transaction Mode REQUIRED settings ──
+        'CONN_MAX_AGE': 0,          # Disable persistent connections (pgBouncer handles pooling)
+        'OPTIONS': {
+            'sslmode': 'require',   # Supabase requires SSL
+        },
+        'DISABLE_SERVER_SIDE_CURSORS': True,  # Required for pgBouncer
     }
 }
 
