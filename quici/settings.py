@@ -28,7 +28,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary',
     'rest_framework',
     'corsheaders',
     'users',
@@ -194,13 +196,13 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'http://localhost:3001',
     'http://localhost:5173',
     'https://quici-restaurant.netlify.app',
     'https://quici-restaurant.pages.dev',
     'https://quicki-c6g.pages.dev',
     'https://quicki.net',
     'https://www.quicki.net',
-    'www.quicki.net'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -233,14 +235,12 @@ VAPID_PRIVATE_KEY = 'GWyqKCJ08o4m2dUHghm0QbKh8yp5Rep4fxu6FZ47dgM'
 VAPID_ADMIN_EMAIL = 'fakeclub256@gmail.com'
 
 
-# settings.py
+# ── Cloudinary Media Storage ──
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'hlnyhy2d'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '656683471387632'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'r1jJlIgydtItjhM0Y6RZ_D-lSiY'),
+}
 
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID','AKIAZ4SZDVVD2NGQ4OXZ')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY','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')
-AWS_STORAGE_BUCKET_NAME = 'quicki-media'
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-AWS_S3_REGION_NAME = 'ap-south-1'
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL =  None
-AWS_S3_VERITY = True
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+MEDIA_URL = '/media/'
