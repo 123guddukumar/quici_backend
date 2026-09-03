@@ -7,6 +7,8 @@ from users.models import Restaurant
 from .serializers import MenuItemSerializer, MenuItemCreateSerializer, CategorySerializer, RatingSerializer
 import logging
 
+from django.db.models import Count
+
 logger = logging.getLogger(__name__)
 
 class MenuViewSet(viewsets.ModelViewSet):
@@ -25,6 +27,7 @@ class MenuViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        qs = MenuItem.objects.select_related('restaurant', 'category').prefetch_related('images', 'ratings', 'ratings__user')
         if user.is_authenticated and getattr(user, 'role', None) == 'admin':
             try:
                 restaurant, _ = Restaurant.objects.get_or_create(
@@ -36,11 +39,11 @@ class MenuViewSet(viewsets.ModelViewSet):
                         'state': 'UP'
                     }
                 )
-                return MenuItem.objects.filter(restaurant=restaurant)
+                return qs.filter(restaurant=restaurant)
             except Exception as e:
                 logger.error(f"Error fetching restaurant for admin: {e}")
-                return MenuItem.objects.all()
-        return MenuItem.objects.all()
+                return qs
+        return qs
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -107,6 +110,6 @@ class MenuViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Category.objects.all()
+    queryset = Category.objects.annotate(items_count=Count('menu_items')).prefetch_related('menu_items')
     serializer_class = CategorySerializer
     permission_classes = [AllowAny]

@@ -37,11 +37,13 @@ class MenuItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'price', 'category', 'is_available', 'restaurant', 'images', 'average_rating', 'total_ratings', 'ratings']
 
     def get_average_rating(self, obj):
-        avg = obj.ratings.aggregate(Avg('rating'))['rating__avg']
-        return round(avg, 1) if avg else None
+        ratings_list = [r.rating for r in obj.ratings.all()]
+        if not ratings_list:
+            return None
+        return round(sum(ratings_list) / len(ratings_list), 1)
 
     def get_total_ratings(self, obj):
-        return obj.ratings.count()
+        return len(obj.ratings.all())
 
 class MenuItemCreateSerializer(serializers.ModelSerializer):
     images = serializers.ListField(
@@ -99,4 +101,6 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'image', 'items_count']
 
     def get_items_count(self, obj):
-        return obj.menu_items.count()
+        if hasattr(obj, 'items_count'):
+            return obj.items_count
+        return getattr(obj, 'menu_items_count', None) or len(obj.menu_items.all())
