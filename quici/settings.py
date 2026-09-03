@@ -80,23 +80,11 @@ TEMPLATES = [
 ROOT_URLCONF = 'quici.urls'
 ASGI_APPLICATION = 'quici.asgi.application'
 
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             'hosts': [('127.0.0.1', 6379)],
-#         },
-#     },
-# }
-# redis-cli --tls -u redis://default:AV0vAAIncDJmZjk0Yjc0ZWI1Yzg0MWVlYjg4ODI3MjA1ZjUxZDkxNnAyMjM4NTU@warm-lacewing-23855.upstash.io:6379
-
-REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')
-
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [REDIS_URL],
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
