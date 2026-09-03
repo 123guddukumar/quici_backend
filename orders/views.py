@@ -241,7 +241,8 @@ class OrderView(APIView):
                     orders = Order.objects.filter(restaurant=restaurant)
                 except Restaurant.DoesNotExist:
                     logger.error(f"No restaurant found for user_id: {user_id}")
-                    return Response({"detail": "Restaurant not found for this admin"}, status=status.HTTP_404_NOT_FOUND)
+                    logger.warning(f"No restaurant found for user_id: {user_id}")
+                    orders = Order.objects.none()
             else:
                 if request.user.role == 'admin':
                     try:
@@ -249,8 +250,8 @@ class OrderView(APIView):
                         logger.debug(f"Admin fetching orders for restaurant: {restaurant.name} (ID: {restaurant.id})")
                         orders = Order.objects.filter(restaurant=restaurant)
                     except Restaurant.DoesNotExist:
-                        logger.error(f"No restaurant found for admin: {request.user.username}")
-                        return Response({"detail": "Restaurant not found for this admin"}, status=status.HTTP_404_NOT_FOUND)
+                        logger.warning(f"No restaurant found for admin: {request.user.username}")
+                        orders = Order.objects.none()
                 else:
                     orders = Order.objects.filter(user=request.user)
                     logger.debug(f"Fetching orders for non-admin user: {request.user.username}")

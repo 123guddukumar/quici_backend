@@ -15,9 +15,10 @@ ALLOWED_HOSTS = [
     'api.quicki.net',
     'quicki.net',
     'www.quicki.net',
+    'quicki.duckdns.org',
     'localhost',
     '127.0.0.1',
-    '*',  # Remove this in strict production
+    # Remove this in strict production
 ]
 
 
@@ -28,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
+   # 'cloudinary_storage',
     'django.contrib.staticfiles',
     'cloudinary',
     'rest_framework',
@@ -89,12 +90,13 @@ ASGI_APPLICATION = 'quici.asgi.application'
 # }
 # redis-cli --tls -u redis://default:AV0vAAIncDJmZjk0Yjc0ZWI1Yzg0MWVlYjg4ODI3MjA1ZjUxZDkxNnAyMjM4NTU@warm-lacewing-23855.upstash.io:6379
 
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            # "hosts": ["rediss://default:AV0vAAIncDJmZjk0Yjc0ZWI1Yzg0MWVlYjg4ODI3MjA1ZjUxZDkxNnAyMjM4NTU@warm-lacewing-23855.upstash.io:6379"],
-           "hosts": ["rediss://default:ASiWAAIncDJjMTk5ZDhlM2UzYjQ0Yzk4OGMyYmU2ZTQ5YTQ1NzhkMXAyMTAzOTA@honest-jackal-10390.upstash.io:6379"]
+            "hosts": [REDIS_URL],
         },
     },
 }
@@ -178,10 +180,17 @@ SIMPLE_JWT = {
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # STATIC_URL = '/static/'
 
@@ -195,6 +204,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
+    "https://quicki.duckdns.org",
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:5173',
@@ -213,7 +223,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://api.quicki.net',
     'http://api.quicki.net',
     'https://quicki.net',
-    'https://www.quicki.net'
+    'https://www.quicki.net',
+    "https://quicki.duckdns.org"
 ]
 
 
@@ -242,5 +253,6 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'r1jJlIgydtItjhM0Y6RZ_D-lSiY'),
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+#DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+#DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
