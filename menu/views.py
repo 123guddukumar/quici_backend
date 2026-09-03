@@ -25,39 +25,52 @@ class MenuViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated and user.role == 'admin':
-            try:
-                restaurant = user.restaurant
-                return MenuItem.objects.filter(restaurant=restaurant)
-            except AttributeError:
-                logger.error(f"User {user.username} with role 'admin' has no associated restaurant")
-                return MenuItem.objects.none()
+            restaurant, _ = Restaurant.objects.get_or_create(
+                user=user,
+                defaults={
+                    'name': f"{user.username}'s Restaurant",
+                    'city': user.city or 'Noida',
+                    'state': 'UP'
+                }
+            )
+            return MenuItem.objects.filter(restaurant=restaurant)
         return MenuItem.objects.all()
 
     def perform_create(self, serializer):
         user = self.request.user
         if user.role != 'admin':
             logger.error(f"User {user.username} attempted to create menu item without admin role")
-            return Response({"detail": "Only restaurant admins can add menu items."}, status=status.HTTP_403_FORBIDDEN)
-        try:
-            restaurant = user.restaurant
-            serializer.save(restaurant=restaurant)
-            logger.info(f"Menu item created by {user.username} for restaurant {restaurant.name}")
-        except AttributeError:
-            logger.error(f"User {user.username} has no associated restaurant")
-            return Response({"detail": "No restaurant associated with this user."}, status=status.HTTP_400_BAD_REQUEST)
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only restaurant admins can add menu items.")
+        
+        restaurant, _ = Restaurant.objects.get_or_create(
+            user=user,
+            defaults={
+                'name': f"{user.username}'s Restaurant",
+                'city': user.city or 'Noida',
+                'state': 'UP'
+            }
+        )
+        serializer.save(restaurant=restaurant)
+        logger.info(f"Menu item created by {user.username} for restaurant {restaurant.name}")
 
     def perform_update(self, serializer):
         user = self.request.user
         if user.role != 'admin':
             logger.error(f"User {user.username} attempted to update menu item without admin role")
-            return Response({"detail": "Only restaurant admins can update menu items."}, status=status.HTTP_403_FORBIDDEN)
-        try:
-            restaurant = user.restaurant
-            serializer.save(restaurant=restaurant)
-            logger.info(f"Menu item updated by {user.username} for restaurant {restaurant.name}")
-        except AttributeError:
-            logger.error(f"User {user.username} has no associated restaurant")
-            return Response({"detail": "No restaurant associated with this user."}, status=status.HTTP_400_BAD_REQUEST)
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only restaurant admins can update menu items.")
+        
+        restaurant, _ = Restaurant.objects.get_or_create(
+            user=user,
+            defaults={
+                'name': f"{user.username}'s Restaurant",
+                'city': user.city or 'Noida',
+                'state': 'UP'
+            }
+        )
+        serializer.save(restaurant=restaurant)
+        logger.info(f"Menu item updated by {user.username} for restaurant {restaurant.name}")
 
     def perform_destroy(self, instance):
         user = self.request.user

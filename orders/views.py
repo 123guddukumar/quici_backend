@@ -242,16 +242,18 @@ class OrderView(APIView):
                 except Restaurant.DoesNotExist:
                     logger.error(f"No restaurant found for user_id: {user_id}")
                     logger.warning(f"No restaurant found for user_id: {user_id}")
-                    orders = Order.objects.none()
             else:
                 if request.user.role == 'admin':
-                    try:
-                        restaurant = Restaurant.objects.get(user=request.user)
-                        logger.debug(f"Admin fetching orders for restaurant: {restaurant.name} (ID: {restaurant.id})")
-                        orders = Order.objects.filter(restaurant=restaurant)
-                    except Restaurant.DoesNotExist:
-                        logger.warning(f"No restaurant found for admin: {request.user.username}")
-                        orders = Order.objects.none()
+                    restaurant, _ = Restaurant.objects.get_or_create(
+                        user=request.user,
+                        defaults={
+                            'name': f"{request.user.username}'s Restaurant",
+                            'city': request.user.city or 'Noida',
+                            'state': 'UP'
+                        }
+                    )
+                    logger.debug(f"Admin fetching orders for restaurant: {restaurant.name} (ID: {restaurant.id})")
+                    orders = Order.objects.filter(restaurant=restaurant)
                 else:
                     orders = Order.objects.filter(user=request.user)
                     logger.debug(f"Fetching orders for non-admin user: {request.user.username}")
@@ -449,17 +451,15 @@ class OrderStatsView(APIView):
                         'todays_orders': 0,
                     })
             else:
-                try:
-                    restaurant = Restaurant.objects.get(user=request.user)
-                    logger.debug(f"Using default restaurant for user {request.user.username}: {restaurant.name} (ID: {restaurant.id})")
-                except Restaurant.DoesNotExist:
-                    logger.warning(f"Restaurant not found for admin user {request.user.username}")
-                    return Response({
-                        'total_items': 0,
-                        'total_orders': 0,
-                        'total_revenue': 0.0,
-                        'todays_orders': 0,
-                    })
+                restaurant, _ = Restaurant.objects.get_or_create(
+                    user=request.user,
+                    defaults={
+                        'name': f"{request.user.username}'s Restaurant",
+                        'city': request.user.city or 'Noida',
+                        'state': 'UP'
+                    }
+                )
+                logger.debug(f"Using default restaurant for user {request.user.username}: {restaurant.name} (ID: {restaurant.id})")
 
             orders = Order.objects.filter(restaurant=restaurant)
             total_items = orders.aggregate(total_items=Sum('items__quantity'))['total_items'] or 0
