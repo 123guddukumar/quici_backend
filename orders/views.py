@@ -248,6 +248,7 @@ class OrderView(APIView):
                         user=request.user,
                         defaults={
                             'name': f"{request.user.username}'s Restaurant",
+                            'address': getattr(request.user, 'address', '') or 'Main Market',
                             'city': request.user.city or 'Noida',
                             'state': 'UP'
                         }
@@ -455,6 +456,7 @@ class OrderStatsView(APIView):
                     user=request.user,
                     defaults={
                         'name': f"{request.user.username}'s Restaurant",
+                        'address': getattr(request.user, 'address', '') or 'Main Market',
                         'city': request.user.city or 'Noida',
                         'state': 'UP'
                     }

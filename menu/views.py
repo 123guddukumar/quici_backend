@@ -24,21 +24,26 @@ class MenuViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated and user.role == 'admin':
-            restaurant, _ = Restaurant.objects.get_or_create(
-                user=user,
-                defaults={
-                    'name': f"{user.username}'s Restaurant",
-                    'city': user.city or 'Noida',
-                    'state': 'UP'
-                }
-            )
-            return MenuItem.objects.filter(restaurant=restaurant)
+        if user.is_authenticated and getattr(user, 'role', None) == 'admin':
+            try:
+                restaurant, _ = Restaurant.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        'name': f"{user.username}'s Restaurant",
+                        'address': getattr(user, 'address', '') or 'Main Market',
+                        'city': getattr(user, 'city', '') or 'Noida',
+                        'state': 'UP'
+                    }
+                )
+                return MenuItem.objects.filter(restaurant=restaurant)
+            except Exception as e:
+                logger.error(f"Error fetching restaurant for admin: {e}")
+                return MenuItem.objects.all()
         return MenuItem.objects.all()
 
     def perform_create(self, serializer):
         user = self.request.user
-        if user.role != 'admin':
+        if getattr(user, 'role', None) != 'admin':
             logger.error(f"User {user.username} attempted to create menu item without admin role")
             from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied("Only restaurant admins can add menu items.")
@@ -47,7 +52,8 @@ class MenuViewSet(viewsets.ModelViewSet):
             user=user,
             defaults={
                 'name': f"{user.username}'s Restaurant",
-                'city': user.city or 'Noida',
+                'address': getattr(user, 'address', '') or 'Main Market',
+                'city': getattr(user, 'city', '') or 'Noida',
                 'state': 'UP'
             }
         )
@@ -56,7 +62,7 @@ class MenuViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         user = self.request.user
-        if user.role != 'admin':
+        if getattr(user, 'role', None) != 'admin':
             logger.error(f"User {user.username} attempted to update menu item without admin role")
             from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied("Only restaurant admins can update menu items.")
@@ -65,7 +71,8 @@ class MenuViewSet(viewsets.ModelViewSet):
             user=user,
             defaults={
                 'name': f"{user.username}'s Restaurant",
-                'city': user.city or 'Noida',
+                'address': getattr(user, 'address', '') or 'Main Market',
+                'city': getattr(user, 'city', '') or 'Noida',
                 'state': 'UP'
             }
         )
