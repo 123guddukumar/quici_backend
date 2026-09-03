@@ -441,11 +441,25 @@ class OrderStatsView(APIView):
                     restaurant = Restaurant.objects.get(user__id=user_id)
                     logger.debug(f"Found restaurant for user_id {user_id}: {restaurant.name} (ID: {restaurant.id})")
                 except Restaurant.DoesNotExist:
-                    logger.error(f"No restaurant found for user_id: {user_id}")
-                    return Response({"detail": "Restaurant not found for this admin"}, status=status.HTTP_404_NOT_FOUND)
+                    logger.warning(f"No restaurant found for user_id: {user_id}")
+                    return Response({
+                        'total_items': 0,
+                        'total_orders': 0,
+                        'total_revenue': 0.0,
+                        'todays_orders': 0,
+                    })
             else:
-                restaurant = Restaurant.objects.get(user=request.user)
-                logger.debug(f"Using default restaurant for user {request.user.username}: {restaurant.name} (ID: {restaurant.id})")
+                try:
+                    restaurant = Restaurant.objects.get(user=request.user)
+                    logger.debug(f"Using default restaurant for user {request.user.username}: {restaurant.name} (ID: {restaurant.id})")
+                except Restaurant.DoesNotExist:
+                    logger.warning(f"Restaurant not found for admin user {request.user.username}")
+                    return Response({
+                        'total_items': 0,
+                        'total_orders': 0,
+                        'total_revenue': 0.0,
+                        'todays_orders': 0,
+                    })
 
             orders = Order.objects.filter(restaurant=restaurant)
             total_items = orders.aggregate(total_items=Sum('items__quantity'))['total_items'] or 0
@@ -461,9 +475,6 @@ class OrderStatsView(APIView):
                 'total_revenue': float(total_revenue),
                 'todays_orders': todays_orders,
             })
-        except Restaurant.DoesNotExist:
-            logger.error(f"Restaurant not found for admin user {request.user.username}")
-            return Response({"detail": "Restaurant not found for this admin"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.error(f"Error fetching order stats: {str(e)}", exc_info=True)
             return Response({"detail": "Failed to fetch order stats"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
