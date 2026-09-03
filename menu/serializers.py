@@ -52,34 +52,44 @@ class MenuItemCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenuItem
-        fields = ['name', 'description', 'price', 'category', 'is_available', 'images']
+        fields = ['id', 'name', 'description', 'price', 'category', 'is_available', 'images']
+        read_only_fields = ['id']
 
     def create(self, validated_data):
         images = validated_data.pop('images', [])
+        if not images and 'request' in self.context:
+            images = self.context['request'].FILES.getlist('images')
+        
         logger.debug(f"Creating menu item with validated data: {validated_data}, images: {len(images)}")
         menu_item = MenuItem.objects.create(**validated_data)
         for image in images:
-            MenuItemImage.objects.create(menu_item=menu_item, image=image)
+            try:
+                MenuItemImage.objects.create(menu_item=menu_item, image=image)
+            except Exception as e:
+                logger.error(f"Error creating menu item image: {e}")
         return menu_item
 
     def update(self, instance, validated_data):
         images = validated_data.pop('images', None)
+        if images is None and 'request' in self.context and 'images' in self.context['request'].FILES:
+            images = self.context['request'].FILES.getlist('images')
+
         logger.debug(f"Updating menu item {instance.id} with validated data: {validated_data}")
-        
-        # Update fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
-        # Update images if provided
-        if images is not None:
-            # Clear existing images
+        if images is not None and len(images) > 0:
             MenuItemImage.objects.filter(menu_item=instance).delete()
-            # Add new images
             for image in images:
-                MenuItemImage.objects.create(menu_item=instance, image=image)
-        
+                try:
+                    MenuItemImage.objects.create(menu_item=instance, image=image)
+                except Exception as e:
+                    logger.error(f"Error updating menu item image: {e}")
         return instance
+
+    def to_representation(self, instance):
+        return MenuItemSerializer(instance, context=self.context).data
 
 class CategorySerializer(serializers.ModelSerializer):
     items_count = serializers.SerializerMethodField()
