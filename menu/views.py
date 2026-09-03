@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import MenuItem, Category, Rating
+from users.models import Restaurant
 from .serializers import MenuItemSerializer, MenuItemCreateSerializer, CategorySerializer, RatingSerializer
 import logging
 
