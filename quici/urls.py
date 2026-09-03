@@ -5,6 +5,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # API endpoints with 'api/' prefix
     path('api/users/', include('users.urls')),
     path('api/menu/', include('menu.urls')),
     path('api/orders/', include('orders.urls')),
@@ -14,5 +16,17 @@ urlpatterns = [
     path('api/cart/', include('cart.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/reports/', include('reports.urls')),
-    path('api/wishlist/', include('wishlist.urls'))
+    path('api/wishlist/', include('wishlist.urls')),
+
+    # Fallback routes without 'api/' prefix (for reverse proxies like Nginx)
+    path('users/', include('users.urls')),
+    path('menu/', include('menu.urls')),
+    path('orders/', include('orders.urls')),
+    path('payments/', include('payments.urls')),
+    path('offers/', include('offers.urls')), 
+    path('reviews/', include('reviews.urls')),
+    path('cart/', include('cart.urls')),
+    path('notifications/', include('notifications.urls')),
+    path('reports/', include('reports.urls')),
+    path('wishlist/', include('wishlist.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

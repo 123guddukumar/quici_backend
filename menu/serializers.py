@@ -82,6 +82,11 @@ class MenuItemCreateSerializer(serializers.ModelSerializer):
         return instance
 
 class CategorySerializer(serializers.ModelSerializer):
+    items_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Category
-        fields = ['id', 'name', 'image']
+        fields = ['id', 'name', 'image', 'items_count']
+
+    def get_items_count(self, obj):
+        return obj.menu_items.count()
