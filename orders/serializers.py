@@ -66,7 +66,10 @@ class OrderSerializer(serializers.ModelSerializer):
             'items', 'items_info', 'created_at', 'updated_at'
         ]
         extra_kwargs = {
-            'submenu': {'write_only': True, 'required': False, 'allow_null': True}
+            'submenu': {'write_only': True, 'required': False, 'allow_null': True},
+            'state': {'required': False, 'allow_blank': True},
+            'zip_code': {'required': False, 'allow_blank': True},
+            'nearest_place': {'required': False, 'allow_blank': True},
         }
 
     def get_username(self, obj):
@@ -82,12 +85,20 @@ class OrderSerializer(serializers.ModelSerializer):
         logger.debug(f"Validating order data for user: {self.context['request'].user.username} (role: {self.context['request'].user.role}), data: {data}, partial: {self.partial}")
         
         if not self.partial:
-            required_fields = ['reciver_name', 'street', 'city', 'state', 'zip_code', 'mobile']
+            # Set defaults for optional address fields if not provided
+            if not data.get('state'):
+                data['state'] = 'N/A'
+            if not data.get('zip_code'):
+                data['zip_code'] = '000000'
+            if not data.get('nearest_place'):
+                data['nearest_place'] = ''
+
+            required_fields = ['reciver_name', 'street', 'city', 'mobile']
             for field in required_fields:
                 if not data.get(field):
                     raise serializers.ValidationError({field: "This field is required."})
         
-            if 'mobile' in data and (not data['mobile'].isdigit() or not (10 <= len(data['mobile']) <= 15)):
+            if 'mobile' in data and (not str(data['mobile']).isdigit() or not (10 <= len(str(data['mobile'])) <= 15)):
                 raise serializers.ValidationError({"mobile": "Mobile number must be 10–15 digits."})
 
         for field in ['subtotal', 'gst', 'service_charge', 'delivery_charge', 'total_amount']:
