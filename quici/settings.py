@@ -225,8 +225,8 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER','rkinstitute85@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD','hchdlojdrkwtacnx')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID','rzp_test_gp96uKYK1wp4hS')
-RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET','CrTK2UUkDVulKrpVUjSvzSC6')
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', 'rzp_test_TbX2cIx0nBntex')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '622vHkWzUJR5nnAFemsXUUty')
 
 # VAPID
 VAPID_PUBLIC_KEY = 'BGInHhvVw4w2-wMWDJltZ4nGjVM4JODRLBRVK_BCIAzjMhTRhMJqAD-UJwRrbCira6zUr_cJ8Q1eLzicNWqAyeA'
